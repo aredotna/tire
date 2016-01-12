@@ -275,6 +275,37 @@ module Tire
 
       end
 
+      context "aggs" do
+        should "retrieve geohash_grid aggs" do
+          s = Search::Search.new('index') do
+            agg(:grid, :geohash_grid,
+              field: :location,
+              precision: 5
+            )
+          end
+          assert_equal 1, s.aggs.keys.size
+          assert_not_nil  s.aggs[:grid]
+        end
+
+        should "retrieve multiple aggs" do
+          s = Search::Search.new('index') do
+            agg(:grid, :geohash_grid,
+              field: :location,
+              precision: 5
+            )
+
+            agg(:articles_over_time, :date_histogram,
+              field: 'date',
+              interval: 'month'
+            )
+          end
+
+          assert_equal 2, s.aggs.keys.size
+          assert_not_nil  s.aggs[:grid]
+          assert_not_nil  s.aggs[:articles_over_time]
+        end
+      end
+
       context "filter" do
 
         should "allow to specify filter" do

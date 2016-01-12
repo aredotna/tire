@@ -4,7 +4,7 @@ module Tire
 
     class Search
 
-      attr_reader :indices, :types, :query, :facets, :filters, :options, :explain, :script_fields
+      attr_reader :indices, :types, :query, :facets, :aggs, :filters, :options, :explain, :script_fields
 
       def initialize(indices=nil, options={}, &block)
         if indices.is_a?(Hash)
@@ -69,6 +69,12 @@ module Tire
         self
       end
 
+      def agg(aggregation_name, aggregation_type, aggregation_body={}, &block)
+        @aggs ||= {}
+        @aggs.update Aggergation.new(aggregation_name, aggregation_type, aggregation_body, &block).to_hash
+        self
+      end
+
       def filter(type, *options)
         @filters ||= []
         @filters << Filter.new(type, *options).to_hash
@@ -118,7 +124,7 @@ module Tire
         @fields = Array(fields.flatten)
         self
       end
-      
+
       # Since ES 1.0.0 field values, in response to the fields parameter, are now always returned as arrays.
       # They recommend the _source field to be used.
       def source_fields(*fields)
@@ -176,6 +182,7 @@ module Tire
           request.update( { :query  => @query.to_hash } )    if @query
           request.update( { :sort   => @sort.to_ary   } )    if @sort
           request.update( { :facets => @facets.to_hash } )   if @facets
+          request.update( { :aggs => @aggs.to_hash } )   if @aggs
           request.update( { :filter => @filters.first.to_hash } ) if @filters && @filters.size == 1
           request.update( { :filter => { :and => @filters.map {|filter| filter.to_hash} } } ) if  @filters && @filters.size > 1
           request.update( { :highlight => @highlight.to_hash } ) if @highlight
