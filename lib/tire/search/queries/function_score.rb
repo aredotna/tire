@@ -59,11 +59,6 @@ module Tire
           @value
         end
 
-        def random_score(value)
-          @value[:random_score] = value
-          @value
-        end
-
         def script_score(hash)
           @value[:functions] ||= []
           @value[:functions] << { "script_score" => hash }
@@ -82,6 +77,11 @@ module Tire
 
         def max_boost(value)
           @value[:max_boost] = value
+          @value
+        end
+
+        def random_score(value = rand(100))
+          @value[:random_score] = { seed: value }
           @value
         end
 
