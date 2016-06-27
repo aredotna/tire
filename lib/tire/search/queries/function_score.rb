@@ -32,6 +32,11 @@ module Tire
             @value
           end
 
+          def random_score(value)
+            @value[:random_score] = value
+            @value
+          end
+
           def to_hash
             @value
           end
