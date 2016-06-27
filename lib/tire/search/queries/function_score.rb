@@ -32,11 +32,6 @@ module Tire
             @value
           end
 
-          def random_score(value)
-            @value[:random_score] = value
-            @value
-          end
-
           def to_hash
             @value
           end
@@ -61,6 +56,11 @@ module Tire
           block.arity < 1 ? custom_filter.instance_eval(&block) : block.call(custom_filter) if block_given?
           @value[:functions] ||= []
           @value[:functions] << custom_filter.to_hash
+          @value
+        end
+
+        def random_score(value)
+          @value[:random_score] = value
           @value
         end
 
